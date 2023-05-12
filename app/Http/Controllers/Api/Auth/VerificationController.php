@@ -86,7 +86,7 @@ class VerificationController extends Controller
     }
     
 
-    public function sendPhoneVerifyCode(Request $request)
+    public function sendPhoneVerifyCodeTest(Request $request)
     {
     //     try {
     //         $user = auth('sanctum')->user();
@@ -158,7 +158,7 @@ class VerificationController extends Controller
         }
     }
     
-    public function sendPhoneVerifyCodeTest(Request $request)
+    public function sendPhoneVerifyCode(Request $request)
     {
     
         try {
@@ -187,7 +187,7 @@ class VerificationController extends Controller
                 CURLOPT_FOLLOWLOCATION => true,
                 CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
                 CURLOPT_CUSTOMREQUEST => 'POST',
-                CURLOPT_POSTFIELDS =>'{"messages":[{"destinations":[{"to":"'. $phone .'"}],"from":"One Finance","text":"PIN Code: '. $pin .'"}]}',
+                CURLOPT_POSTFIELDS =>'{"messages":[{"destinations":[{"to":"'. $phone .'"}],"from":"1finance","text":"PIN Code: '. $pin .'"}]}',
                 CURLOPT_HTTPHEADER => array(
                     'Authorization: App d7f12b3c006452232e6f7ca6f4f79bde-b70f6b20-19ff-4ce5-8859-84f95fac7abf',
                     'Content-Type: application/json',

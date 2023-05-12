@@ -120,3 +120,5 @@ Stack trace:
 [08-May-2023 13:51:11 UTC] PHP Warning:  Undefined variable $logoPath in /home/netridig/public_html/finance.javal.ge/config/nova.php on line 166
 [08-May-2023 13:51:11 UTC] PHP Warning:  Undefined variable $logoPath in /home/netridig/public_html/finance.javal.ge/config/nova.php on line 166
 [08-May-2023 13:51:11 UTC] PHP Warning:  Undefined variable $logoPath in /home/netridig/public_html/finance.javal.ge/config/nova.php on line 166
+[12-May-2023 12:04:37 UTC] PHP Fatal error:  Cannot use Illuminate\Http\Request as Request because the name is already in use in /home/netridig/public_html/finance.javal.ge/app/Http/Controllers/Api/DocumentController.php on line 9
+[12-May-2023 12:19:29 UTC] PHP Fatal error:  Cannot declare class App\Http\Requests\DocumentShowRequest, because the name is already in use in /home/netridig/public_html/finance.javal.ge/app/Http/Requests/Api/DocumentShowRequest.php on line 7

@@ -88,6 +88,10 @@ class User extends Authenticatable implements MustVerifyEmail
     public function userBanks() {
         return $this->hasMany(UserBank::class);
     }
+    
+    public function documents() {
+        return $this->morphMany(Document::class, 'documentable');
+    }
 
     public function bankAccounts()
     {

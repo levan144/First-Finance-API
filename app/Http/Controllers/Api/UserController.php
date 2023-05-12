@@ -54,7 +54,7 @@ class UserController extends Controller
     $user = auth()->user();
 
     if (!Hash::check($validatedData['current_password'], $user->password)) {
-        return response()->json(['status' => false,'message' => __('Current password is incorrect')], 400);
+        return response()->json(['status' => false, 'message' => __('Current password is incorrect')], 400);
     }
 
     $user->password = Hash::make($validatedData['new_password']);

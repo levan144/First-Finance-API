@@ -16,3 +16,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return redirect('/nova');
 });
+
+Route::get('/test', function () {
+    return redirect('/nova');
+});
