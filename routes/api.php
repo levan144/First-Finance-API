@@ -68,6 +68,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::prefix('company_verification')->group(function () {
             Route::get('documents', [DocumentController::class, 'show']);
             Route::post('documents/store', [DocumentController::class, 'store']);
+            Route::get('documents/required', [DocumentController::class, 'required']);
         });
     });
     // Route::middleware('isVerified')->group(function () {
