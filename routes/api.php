@@ -69,6 +69,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('documents', [DocumentController::class, 'show']);
             Route::post('documents/store', [DocumentController::class, 'store']);
             Route::get('documents/required', [DocumentController::class, 'required']);
+            Route::post('documents/destroy', [DocumentController::class, 'destroy']);
         });
     });
     // Route::middleware('isVerified')->group(function () {
