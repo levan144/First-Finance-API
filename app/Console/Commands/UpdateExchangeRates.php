@@ -14,8 +14,6 @@ class UpdateExchangeRates extends Command
 
     public function handle()
     {
-        $currencies = Currency::all()->pluck('id')->toArray();
-
         $response = Http::get('https://nbg.gov.ge/gw/api/ct/monetarypolicy/currencies/ka/json');
 
         if (!$response->ok()) {
@@ -30,87 +28,55 @@ class UpdateExchangeRates extends Command
             return;
         }
 
-        // Check if we have GEL to EUR and GEL to USD rates
-        $gelToEur = ExchangeRate::where('currency_id', Currency::where('code', 'GEL')->value('id'))
-            ->where('to_currency_id', Currency::where('code', 'EUR')->value('id'))
-            ->first();
-        $gelToUsd = ExchangeRate::where('currency_id', Currency::where('code', 'GEL')->value('id'))
-            ->where('to_currency_id', Currency::where('code', 'USD')->value('id'))
-            ->first();
+        $gelToEurRate = $this->getRate($rates, 'EUR');
+        $gelToUsdRate = $this->getRate($rates, 'USD');
 
-        foreach ($currencies as $fromCurrencyId) {
-            $fromCurrencyCode = Currency::find($fromCurrencyId)->code;
-            foreach ($rates[0]['currencies'] as $currency) {
-                if ($currency['code'] === $fromCurrencyCode) {
-                    continue;
-                }
+        $eurId = Currency::where('code', 'EUR')->value('id');
+        $usdId = Currency::where('code', 'USD')->value('id');
+        $gelId = Currency::where('code', 'GEL')->value('id');
 
-                $toCurrencyId = Currency::where('code', $currency['code'])->value('id');
+        // Update or create GEL to EUR and GEL to USD
+        $this->updateOrCreateRate($gelId, $eurId, $gelToEurRate);
+        $this->updateOrCreateRate($gelId, $usdId, $gelToUsdRate);
+    
+        // Update or create EUR to GEL and USD to GEL
+        $this->updateOrCreateRate($eurId, $gelId, 1 / $gelToEurRate);
+        $this->updateOrCreateRate($usdId, $gelId, 1 / $gelToUsdRate);
 
-                if (!$toCurrencyId) {
-                    continue;
-                }
+        // Calculate and update or create EUR to USD and USD to EUR
+        if ($gelToEurRate && $gelToUsdRate) {
+            $eurToUsdRate = $gelToUsdRate / $gelToEurRate;
+            $usdToEurRate = 1 / $eurToUsdRate;
 
-                // Calculate the exchange rate based on GEL, if possible
-                $exchangeRate = null;
-                if ($fromCurrencyCode === 'USD' && $gelToUsd && $gelToEur) {
-                    $gelToToCurrency = ExchangeRate::where('currency_id', Currency::where('code', 'GEL')->value('id'))
-                        ->where('to_currency_id', $toCurrencyId)
-                        ->first();
-
-                    if ($gelToToCurrency) {
-                        $usdToGel = 1 / $gelToUsd->rate;
-                        $usdToEur = $usdToGel / $gelToEur->rate;
-                        $toCurrencyToEur = $gelToToCurrency->rate / $gelToEur->rate;
-                        $exchangeRate = ExchangeRate::createOrUpdate(
-                            $fromCurrencyId,
-                            $toCurrencyId,
-                            $toCurrencyToEur / $usdToEur
-                        );
-                    }
-                }
-
-                // Calculate the exchange rate based on the direct rate or the inverse rate
-                if (!$exchangeRate) {
-                    $directExchangeRate = ExchangeRate::where('currency_id', $fromCurrencyId)
-                        ->where('to_currency_id', $toCurrencyId)
-                        ->first();
-                    $inverseExchangeRate = ExchangeRate::where('currency_id', $toCurrencyId)
-                        ->where('to_currency_id', $fromCurrencyId)
-                        ->first();
-
-                    if ($directExchangeRate) {
-                        $exchangeRate = $directExchangeRate;
-                    } elseif ($inverseExchangeRate) {
-                        $exchangeRate = $inverseExchangeRate;
-                    } elseif ($gelToToCurrency) {
-                    $gelToFromCurrency = ExchangeRate::where('currency_code', 'GEL')
-                        ->where('to_currency_id', $fromCurrencyId)
-                        ->first();
-
-                    if ($gelToFromCurrency) {
-                        $usdToGel = 1 / $gelToUsd->rate;
-                        $usdToEur = $usdToGel / $gelToEur->rate;
-                        $fromCurrencyToEur = $gelToFromCurrency->rate / $gelToEur->rate;
-                        $exchangeRate = ExchangeRate::createOrUpdate(
-                            $fromCurrencyId,
-                            $toCurrencyId,
-                            $fromCurrencyToEur * $usdToEur / $gelToToCurrency->rate
-                        );
-                    }
-                } else {
-                    $exchangeRate = ExchangeRate::createOrUpdate(
-                        $fromCurrencyId,
-                        $toCurrencyId,
-                        $currency['rate']
-                    );
-                }
-            }
-
-            if ($exchangeRate) {
-                $this->info(sprintf('Exchange rate for %s => %s: %f', $fromCurrencyCode, $currency['code'], $exchangeRate->rate));
-            }
+            $this->updateOrCreateRate($eurId, $usdId, $eurToUsdRate);
+            $this->updateOrCreateRate($usdId, $eurId, $usdToEurRate);
         }
     }
-}
+
+    private function getRate($rates, $currencyCode)
+    {
+        foreach ($rates[0]['currencies'] as $currency) {
+            if ($currency['code'] === $currencyCode) {
+                return $currency['rate'];
+            }
+        }
+
+        return null;
+    }
+
+    private function updateOrCreateRate($fromCurrencyId, $toCurrencyId, $rate) {
+        $exchangeRate = ExchangeRate::firstOrNew(
+            ['currency_id' => $fromCurrencyId, 'to_currency_id' => $toCurrencyId],
+            ['rate' => 1 / $rate]
+        );
+    
+        if ($exchangeRate->exists) {
+            $exchangeRate->rate = 1 / $rate;
+        }
+    
+        $exchangeRate->save();
+    
+        $this->info(sprintf('Exchange rate for %s => %s: %f', $fromCurrencyId, $toCurrencyId, 1 / $rate));
+    }
+
 }

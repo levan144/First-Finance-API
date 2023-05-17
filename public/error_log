@@ -122,3 +122,31 @@ Stack trace:
 [08-May-2023 13:51:11 UTC] PHP Warning:  Undefined variable $logoPath in /home/netridig/public_html/finance.javal.ge/config/nova.php on line 166
 [12-May-2023 12:04:37 UTC] PHP Fatal error:  Cannot use Illuminate\Http\Request as Request because the name is already in use in /home/netridig/public_html/finance.javal.ge/app/Http/Controllers/Api/DocumentController.php on line 9
 [12-May-2023 12:19:29 UTC] PHP Fatal error:  Cannot declare class App\Http\Requests\DocumentShowRequest, because the name is already in use in /home/netridig/public_html/finance.javal.ge/app/Http/Requests/Api/DocumentShowRequest.php on line 7
+[12-May-2023 17:29:57 UTC] PHP Fatal error:  Cannot declare class App\Models\AllowedDocumentType, because the name is already in use in /home/netridig/public_html/finance.javal.ge/app/Models/RequiredDocumentType.php on line 8
+[17-May-2023 12:16:53 UTC] PHP Fatal error:  Cannot use isset() on the result of an expression (you can use "null !== expression" instead) in /home/netridig/public_html/finance.javal.ge/app/Http/Resources/BankResource.php on line 16
+[17-May-2023 12:41:42 UTC] PHP Fatal error:  Uncaught Error: Class "App\Nova\BankAccountResource" not found in /home/netridig/public_html/finance.javal.ge/vendor/laravel/nova/src/Fields/HasMany.php:67
+Stack trace:
+#0 /home/netridig/public_html/finance.javal.ge/vendor/laravel/nova/src/Makeable.php(14): Laravel\Nova\Fields\HasMany->__construct('Bank Accounts', 'bankAccounts', 'App\\Nova\\BankAc...')
+#1 /home/netridig/public_html/finance.javal.ge/app/Nova/User.php(111): Laravel\Nova\Element::make('Bank Accounts', 'bankAccounts', 'App\\Nova\\BankAc...')
+#2 /home/netridig/public_html/finance.javal.ge/vendor/alexwenzel/nova-dependency-container/src/HasDependencies.php(23): App\Nova\User->fields(Object(Laravel\Nova\Http\Requests\ResourceIndexRequest))
+#3 /home/netridig/public_html/finance.javal.ge/vendor/laravel/nova/src/ResolvesFields.php(518): App\Nova\User->availableFields(Object(Laravel\Nova\Http\Requests\ResourceIndexRequest))
+#4 /home/netridig/public_html/finance.javal.ge/vendor/laravel/nova/src/Http/Resources/UserResource.php(28): Laravel\Nova\Resource->resolveAvatarField(Object(Laravel\Nova\Http\Requests\ResourceIndexRequest))
+#5 /home/netridig/public_html/finance.javal.ge/vendor/laravel/nova/src/Http/Middleware/HandleInertiaRequests.php(50): Laravel\Nova\Http\Resources\UserResource->toArray(Object(Illuminate\Http\Request))
+#6 /home/netridig/public_html/finance.javal.ge/vendor/laravel/framework/src/Illuminate/Support/helpers.php(427): Laravel\Nova\Http\Middleware\HandleInertiaRequests->Laravel\Nova\Http\Middleware\{closure}(Object(App\Models\User))
+#7 /home/netridig/public_html/finance.javal.ge/vendor/laravel/nova/src/Http/Middleware/HandleInertiaRequests.php(51): with(Object(App\Models\User), Object(Closure))
+#8 /home/netridig/public_html/finance.javal.ge/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): Laravel\Nova\Http\Middleware\HandleInertiaRequests->Laravel\Nova\Http\Middleware\{closure}()
+#9 /home/netridig/public_html/finance.javal.ge/vendor/laravel/framework/src/Illuminate/Container/Util.php(41): Illuminate\Container\BoundMethod::Illuminate\Container\{closure}()
+#10 /home/netridig/public_html/finance.javal.ge/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(81): Illuminate\Container\Util::unwrapIfClosure(Object(Closure))
+#11 /home/netridig/public_html/finance.javal.ge/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(37): Illuminate\Container\BoundMethod::callBoundMethod(Object(Illuminate\Foundation\Application), Object(Closure), Object(Closure))
+#12 /home/netridig/public_html/finance.javal.ge/vendor/laravel/framework/src/Illuminate/Container/Container.php(661): Illuminate\Container\BoundMethod::call(Object(Illuminate\Foundation\Application), Object(Closure), Array, NULL)
+#13 /home/netridig/public_html/finance.javal.ge/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(353): Illuminate\Container\Container->call(Object(Closure))
+#14 /home/netridig/public_html/finance.javal.ge/vendor/inertiajs/inertia-laravel/src/Response.php(120): Illuminate\Support\Facades\Facade::__callStatic('call', Array)
+#15 /home/netridig/public_html/finance.javal.ge/vendor/inertiajs/inertia-laravel/src/Response.php(97): Inertia\Response->resolvePropertyInstances(Array, Object(Illuminate\Http\Request))
+#16 /home/netridig/public_html/finance.javal.ge/vendor/laravel/nova/src/Exceptions/NovaExceptionHandler.php(70): Inertia\Response->toResponse(Object(Illuminate\Http\Request))
+#17 /home/netridig/public_html/finance.javal.ge/vendor/laravel/nova/src/Exceptions/NovaExceptionHandler.php(44): Laravel\Nova\Exceptions\NovaExceptionHandler->renderInertiaException(Object(Illuminate\Http\Request), Object(Error))
+#18 /home/netridig/public_html/finance.javal.ge/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(213): Laravel\Nova\Exceptions\NovaExceptionHandler->render(Object(Illuminate\Http\Request), Object(Error))
+#19 /home/netridig/public_html/finance.javal.ge/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(190): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Error))
+#20 /home/netridig/public_html/finance.javal.ge/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(250): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Error))
+#21 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Error))
+#22 {main}
+  thrown in /home/netridig/public_html/finance.javal.ge/vendor/laravel/nova/src/Fields/HasMany.php on line 67

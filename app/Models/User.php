@@ -12,7 +12,7 @@ use Spatie\Activitylog\LogOptions;
 use Spatie\Permission\Traits\HasRoles;
 use App\Models\Scopes\UserScope;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
-
+use App\Models\Fee;
 class User extends Authenticatable implements MustVerifyEmail
 {
      use HasRoles, HasApiTokens, HasFactory, Notifiable, LogsActivity;
@@ -99,7 +99,7 @@ class User extends Authenticatable implements MustVerifyEmail
             BankAccount::class, // The related model
             UserBank::class, // The intermediate model
             'user_id', // Foreign key on the intermediate table for the User model
-            'id', // Foreign key on the related table for the BankAccount model
+            'user_bank_id', // Foreign key on the related table for the BankAccount model
             'id', // Local key on the User model
             'id' // Local key on the BankAccount model
         );
@@ -109,11 +109,16 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Transaction::class, 'sender_id');
     }
     
+    public function fees() {
+        return $this->hasMany(Fee::class);
+    }
+    
     protected static function boot()
     {
         parent::boot();
 
         static::addGlobalScope(new UserScope);
     }
+    
     
 }

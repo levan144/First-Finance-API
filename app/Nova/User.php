@@ -21,9 +21,9 @@ use Laravel\Nova\Fields\Boolean;
 use Stepanenko3\NovaJson\JSON;
 use Alexwenzel\DependencyContainer\HasDependencies;
 use Alexwenzel\DependencyContainer\DependencyContainer;
-
+use App\Nova\BankAccount;
 use Laravel\Nova\Fields\File;
-
+use Laravel\Nova\Fields\HasManyThrough;
 class User extends Resource
 {
     
@@ -102,7 +102,7 @@ class User extends Resource
             Text::make(__('Registration number'), 'registration_number'),
             
             HasMany::make(__('Representatives'), 'representatives', \App\Nova\LegalRepresentative::class),
-
+            HasMany::make('Fees'),
             // BelongsTo::make('Representative')->nullable(),
             $this->addressFields(),
             $this->registrationAddressFields(),

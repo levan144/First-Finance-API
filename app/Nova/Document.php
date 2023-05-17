@@ -23,7 +23,7 @@ class Document extends Resource
      * @var string
      */
     public static $title = 'id';
-
+ 
     /**
      * The columns that should be searched.
      *
@@ -43,11 +43,8 @@ class Document extends Resource
         return [
             ID::make()->sortable(),
             MorphTo::make('Documentable')->types([
-                User::class,
-                // LegalRepresentative::class,
-            ]),
+                User::class            ]),
             File::make('File', 'file_path')->disk('public'),
-            
         ];
     }
 

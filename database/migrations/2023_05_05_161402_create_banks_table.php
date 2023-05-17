@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('logo')->nullable(); // Add this line
             $table->string('code')->unique();
+            $table->boolean('is_active')->default(0);
             $table->timestamps();
         });
     }

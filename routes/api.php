@@ -10,7 +10,10 @@ use App\Http\Controllers\Api\{
     Auth\SumSubController,
     SubscriptionController,
     HomeController,
-    DocumentController
+    DocumentController,
+    BankController,
+    BankAccountController,
+    TransactionController
 };
 use App\Http\Middleware\EnsureUserIsVerified;
 
@@ -71,10 +74,32 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('documents/required', [DocumentController::class, 'required']);
             Route::post('documents/destroy', [DocumentController::class, 'destroy']);
         });
+        
+        Route::middleware('isVerified')->group(function () {
+            Route::group(['prefix' => 'banks'], function () {
+                Route::get('/', [BankController::class, 'index']);
+                Route::get('/{id}', [BankController::class, 'show']);
+                Route::get('/{id}/accounts', [BankAccountController::class, 'getBankAccountsByBankId']);
+                // Add other bank routes as needed
+            });
+            
+            Route::group(['prefix' => 'bank-accounts'], function () {
+                Route::get('/{id}', [BankAccountController::class, 'show']);
+                // Add other bank account routes as needed
+            });
+                
+            Route::group(['prefix' => 'transactions'], function () {
+                Route::post('/transfer', [TransactionController::class, 'transfer']);
+                Route::get('/bank-accounts/{bankAccount}', [TransactionController::class, 'getBankAccountTransactions']);
+                Route::post('/calculate-fee', [TransactionController::class, 'calculateFee']);
+                Route::get('/', [TransactionController::class, 'index']);
+                Route::get('/{id}', [TransactionController::class, 'show']);
+                // Add other transaction routes as needed
+            });
+        });
     });
-    // Route::middleware('isVerified')->group(function () {
-    //     // Routes that require verification
-    // });
+    
+    
 });
 
 Route::get('sumsub/token', [SumsubController::class, 'getAccessToken']);
