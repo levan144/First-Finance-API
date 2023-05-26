@@ -92,9 +92,13 @@ class Transaction extends Resource
                 ->rules('required'),
 
             CurrencyField::make('Fee')
+                ->currency('GEL')
+                ->sortable(),
+            
+            CurrencyField::make(__('Bank Fee'),'bank_fee')
                 ->currency('USD')
                 ->sortable(),
-
+            
             Select::make('Type')
                 ->options([
                     'transfer' => 'Transfer',
