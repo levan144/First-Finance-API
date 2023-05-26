@@ -13,7 +13,8 @@ use App\Http\Controllers\Api\{
     DocumentController,
     BankController,
     BankAccountController,
-    TransactionController
+    TransactionController,
+    UserNotificationController
 };
 use App\Http\Middleware\EnsureUserIsVerified;
 
@@ -89,14 +90,26 @@ Route::middleware('auth:sanctum')->group(function () {
             });
                 
             Route::group(['prefix' => 'transactions'], function () {
-                Route::post('/transfer', [TransactionController::class, 'transfer']);
                 Route::get('/bank-accounts/{bankAccount}', [TransactionController::class, 'getBankAccountTransactions']);
+                Route::post('/transfer', [TransactionController::class, 'transfer']);
+                Route::post('/exchange', [TransactionController::class, 'exchange']);
+                Route::post('/calculate-exchange', [TransactionController::class, 'calculateExchange']);
                 Route::post('/calculate-fee', [TransactionController::class, 'calculateFee']);
                 Route::get('/', [TransactionController::class, 'index']);
                 Route::get('/{id}', [TransactionController::class, 'show']);
                 // Add other transaction routes as needed
+                
+            });
+            Route::group(['prefix' => 'beneficiaries'], function () {
+                Route::get('/all', [TransactionController::class, 'benecifiary_all']);
+                Route::get('/', [TransactionController::class, 'benecifiary_show']);
+                Route::delete('/', [TransactionController::class, 'beneficiary_destroy']);
             });
         });
+            Route::get('notifications', [UserNotificationController::class, 'index']);
+            Route::get('notifications/all', [UserNotificationController::class, 'all']);
+            Route::post('notifications/read', [UserNotificationController::class, 'markAsRead']);
+       
     });
     
     

@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('sender_id');
+            $table->unsignedBigInteger('recipient_bank_account_id')->nullable();
+            $table->unsignedBigInteger('bank_account_id')->nullable();
             $table->enum('recipient_type', ['company', 'individual']);
             $table->string('recipient_name');
             $table->string('sender_iban');
@@ -22,13 +24,14 @@ return new class extends Migration
             $table->unsignedBigInteger('to_currency_id')->nullable();
             $table->string('reference')->nullable();
             $table->decimal('amount', 15, 2);
-            $table->decimal('received_amount', 15, 2)->nullable();
+            $table->decimal('converted_amount', 15, 2)->nullable();
             $table->decimal('fee', 15, 2)->nullable();
             $table->enum('type', ['transfer', 'deposit', 'exchange']);
             $table->boolean('is_verified')->default(false);
             $table->timestamps();
     
             $table->foreign('sender_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('recipient_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('currency_id')->references('id')->on('currencies')->onDelete('cascade');
             $table->foreign('to_currency_id')->references('id')->on('currencies')->onDelete('cascade');
         });

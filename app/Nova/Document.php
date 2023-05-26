@@ -7,6 +7,10 @@ use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Fields\MorphTo;
 use Laravel\Nova\Fields\File;
+use Laravel\Nova\Fields\Text;
+// use Laravel\Nova\Fields\Trix;
+use Laravel\Nova\Fields\Select;
+use Laravel\Nova\Fields\DateTime;
 
 class Document extends Resource
 {
@@ -22,7 +26,7 @@ class Document extends Resource
      *
      * @var string
      */
-    public static $title = 'id';
+    public static $title = 'name';
  
     /**
      * The columns that should be searched.
@@ -42,9 +46,33 @@ class Document extends Resource
     public function fields(Request $request){
         return [
             ID::make()->sortable(),
+            Text::make(__('Name'),'name')
+              ->rulesFor('en', [
+                    'required',
+                ])
+              ->nullable()
+              ->translatable(),
+              
+             Text::make(__('Description'),'description')
+              ->translatable(),
+              
             MorphTo::make('Documentable')->types([
                 User::class            ]),
-            File::make('File', 'file_path')->disk('public'),
+            File::make(__('File'), 'file_path')->disk('public'),
+            
+            DateTime::make(__('Expiry Date'), 'expiry_date')
+                ->sortable()
+                ->nullable(),
+                
+            Select::make(__('status'), 'status')
+                ->options([
+                    'Approved' => __('Approved'),
+                    'Expired' => __('Expired'),
+                    'Pending' => __('Pending'),
+                    'Rejected' => __('Rejected'),
+                ])
+                ->rules('required'),
+
         ];
     }
 

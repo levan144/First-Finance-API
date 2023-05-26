@@ -9,7 +9,7 @@ class CreateFeesTable extends Migration
     {
         Schema::create('fees', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('user_id')->nullable();
             $table->enum('transaction_type', ['deposit', 'exchange', 'transfer']);
             $table->decimal('amount', 8, 2)->default(0);
             $table->timestamps();

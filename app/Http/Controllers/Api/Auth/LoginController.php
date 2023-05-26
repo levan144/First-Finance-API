@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\Api\LoginUserRequest;
 use App\Models\User;
-
+use App\Notifications\LoginNotification;
 class LoginController extends Controller
 {
     
@@ -31,7 +31,9 @@ class LoginController extends Controller
             }
 
             $user = User::where('email', $request->email)->first();
-
+            
+            $user->notify(new LoginNotification());
+            
             return response()->json([
                 'status' => true,
                 'message' => 'The user has successfully logged in',

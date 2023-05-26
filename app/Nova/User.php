@@ -24,6 +24,9 @@ use Alexwenzel\DependencyContainer\DependencyContainer;
 use App\Nova\BankAccount;
 use Laravel\Nova\Fields\File;
 use Laravel\Nova\Fields\HasManyThrough;
+use Laravel\Nova\Fields\Currency as CurrencyField;
+
+
 class User extends Resource
 {
     
@@ -100,6 +103,10 @@ class User extends Resource
             // BelongsTo::make('legalForm')->searchable(),
             Date::make(__('Registration Date'),'registration_date'),
             Text::make(__('Registration number'), 'registration_number'),
+            
+            CurrencyField::make(__('Balance Due'), 'balance_due')
+                ->currency('GEL')
+                ->sortable(),
             
             HasMany::make(__('Representatives'), 'representatives', \App\Nova\LegalRepresentative::class),
             HasMany::make('Fees'),

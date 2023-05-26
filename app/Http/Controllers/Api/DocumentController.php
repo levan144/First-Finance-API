@@ -24,7 +24,11 @@ class DocumentController extends Controller
             foreach ($request->file('documents') as $file) {
                 $path = $file->store('documents', 'public');
                 $document = new Document;
-                $document->name = $file->getClientOriginalName();
+                $languages = ['en', 'ru', 'ka'];
+                foreach($languages as $language) {
+                    $document->setTranslation('name', $language, $file->getClientOriginalName());
+                }
+                // $document->name = $file->getClientOriginalName();
                 // $document->file_path = Storage::url($path);
                 $document->file_path = $path;
                 $documents[] = $document;
@@ -33,7 +37,13 @@ class DocumentController extends Controller
             // Save the documents
             $documentable->documents()->saveMany($documents);
         
-            return response()->json(['status' => true, 'message' => __('File uploaded successfully'), 'documents' => $documents]);
+            return response()->json(['status' => true, 'message' => __('File uploaded successfully'), 'documents' => array_map(function($document) {
+        // Convert the document to an array
+        $documentArray = $document->toArray();
+        // Replace 'name' with the English translation
+        $documentArray['name'] = $document->getTranslation('name', 'en');
+        return $documentArray;
+    }, $documents)]);
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
@@ -45,12 +55,24 @@ class DocumentController extends Controller
     public function show(DocumentShowRequest $request) {
         try{
             $user = auth('sanctum')->user();
+            $language = $request->query('locale', 'en');
             $documents = $user->documents;
             if ($documents->count() == 0) {
                 return response()->json(['status' => false, 'message' => __('No such entity found')], 404);
             }
         
-            return response()->json(['status' => true, 'documents' => $documents]);
+            // Convert documents collection to array
+            $documentsArray = $documents->toArray();
+        
+            // Update 'name' and 'description' fields in the array
+            foreach($documentsArray as &$document) {
+                $documentModel = $documents->firstWhere('id', $document['id']);
+                $document['name'] = $documentModel->getTranslation('name', $language);
+                $document['description'] = $documentModel->getTranslation('description', $language) ?? null;
+            }
+
+        
+            return response()->json(['status' => true, 'documents' => $documentsArray]);
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,

@@ -13,6 +13,8 @@ class Transaction extends Model
     
     protected $fillable = [
         'sender_id',
+        'recipient_bank_account_id',
+        'bank_account_id',
         'recipient_type',
         'recipient_name',
         'sender_iban',
@@ -20,13 +22,29 @@ class Transaction extends Model
         'currency_id',
         'reference',
         'amount',
+        'converted_amount',
         'fee',
+        'bank_fee',
         'type',
         'status',
+        'beneficiary_country_code',
+        'beneficiary_address',
+        'bank_name',
+        'bank_code',
+        'intermediary_bank_name',
+        'intermediary_bank_code'
     ];
 
-    public function sender() {
+    public function user() {
         return $this->belongsTo(User::class, 'sender_id');
+    }
+    
+    public function sender() {
+        return $this->belongsTo(BankAccount::class, 'sender_id');
+    }
+    
+    public function recipient() {
+        return $this->belongsTo(BankAccount::class, 'recipient_bank_account_id');
     }
 
     public function currency() {

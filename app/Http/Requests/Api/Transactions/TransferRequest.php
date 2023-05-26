@@ -11,7 +11,7 @@ class TransferRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -27,6 +27,7 @@ class TransferRequest extends FormRequest
             'recipient_name' => 'required|string',
             'recipient_iban' => 'required|string',
             'amount' => 'required|numeric|min:0',
+            'save_beneficiary' => 'required|boolean',
         ];
     }
     

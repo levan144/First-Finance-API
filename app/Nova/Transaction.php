@@ -48,7 +48,7 @@ class Transaction extends Resource
         return [
             ID::make()->sortable(),
 
-            BelongsTo::make('Sender', 'sender', User::class)
+            BelongsTo::make('Sender', 'user', User::class)
                 ->sortable()
                 ->rules('required'),
 
@@ -74,6 +74,13 @@ class Transaction extends Resource
             Text::make('Recipient IBAN', 'recipient_iban')
                 ->sortable()
                 ->rules('required'),
+                
+            Text::make(__('Beneficiary Country Code'), 'beneficiary_country_code'),
+            Text::make(__('Beneficiary Address'), 'beneficiary_address'),
+            Text::make(__('Bank Name'), 'bank_name'),
+            Text::make(__('Bank Code'), 'bank_code'),
+            Text::make(__('Intermediary Bank Name'), 'intermediary_bank_name'),
+            Text::make(__('Intermediary Bank Code'), 'intermediary_bank_code'),
 
             BelongsTo::make('Currency')
                 ->sortable()
