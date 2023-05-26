@@ -11,7 +11,7 @@ use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
-
+use App\Models\Currency;
 class Transaction extends Resource
 {
     /**
@@ -86,10 +86,10 @@ class Transaction extends Resource
                 ->sortable()
                 ->rules('required'),
 
-            CurrencyField::make('Amount')
-                ->currency('USD')
-                ->sortable()
-                ->rules('required'),
+             CurrencyField::make('Amount')
+            ->currency($this->currencyCode())
+            ->sortable()
+            ->rules('required'),
 
             CurrencyField::make('Fee')
                 ->currency('GEL')
@@ -114,6 +114,16 @@ class Transaction extends Resource
             ])->displayUsingLabels()->sortable(),
         ];
     }
+    
+    protected function currencyCode()
+{
+    $currencyId = $this->currency_id;
+    $currency = Currency::find($currencyId);
+    if ($currency) {
+        return strtoupper($currency->code);
+    }
+    return 'USD'; // Default currency if no currency is found
+}
 
     /**
      * Get the cards available for the request.
