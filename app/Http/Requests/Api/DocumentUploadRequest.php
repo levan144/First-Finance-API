@@ -22,7 +22,7 @@ class DocumentUploadRequest extends FormRequest
     public function rules()
     {
         $rules = [
-            'documents.*' => 'required|mimes:pdf,doc,docx,xlsx,xls|max:2048',
+            'documents.*' => 'required|mimes:pdf,doc,docx,xlsx,xls|max:12048',
             // 'type' => 'required|in:user,legal_representative',
         ];
 
