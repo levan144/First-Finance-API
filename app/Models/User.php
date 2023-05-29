@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Activitylog\Traits\LogsActivity;
@@ -15,7 +16,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Models\Fee;
 class User extends Authenticatable implements MustVerifyEmail
 {
-     use HasRoles, HasApiTokens, HasFactory, Notifiable, LogsActivity;
+     use HasRoles, HasApiTokens, HasFactory, Notifiable, LogsActivity, SoftDeletes;
     // use HasApiTokens, HasFactory, Notifiable;
 
     /**
