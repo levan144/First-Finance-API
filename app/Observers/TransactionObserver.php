@@ -25,8 +25,11 @@ class TransactionObserver
     public function updated(Transaction $transaction)
     {
         if ($transaction->isDirty('status')){
+            //GET Transaction FEE
+            $fee = $transaction->fee; 
             if ($transaction->status === 'Approved') {
                 $user = $transaction->user;
+                
                 // Add the fee to the user's balance due if the transaction is approved
                 $user->balance_due += $fee;
                 if($transaction->type === 'transfer'){
