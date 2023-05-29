@@ -14,7 +14,8 @@ use App\Http\Controllers\Api\{
     BankController,
     BankAccountController,
     TransactionController,
-    UserNotificationController
+    UserNotificationController,
+    UserController
 };
 use App\Http\Middleware\EnsureUserIsVerified;
 
@@ -67,6 +68,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::get('home', [HomeController::class, 'home']);
+    Route::get('user', [UserController::class, 'show']);
     
     Route::prefix('home')->group(function () {
         Route::prefix('company_verification')->group(function () {
@@ -110,7 +112,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('notifications', [UserNotificationController::class, 'index']);
             Route::get('notifications/all', [UserNotificationController::class, 'all']);
             Route::post('notifications/read', [UserNotificationController::class, 'markAsRead']);
-       
+            Route::post('notifications/all/read', [UserNotificationController::class, 'markAllAsRead']);
     });
     
     

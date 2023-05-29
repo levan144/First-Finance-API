@@ -62,4 +62,22 @@ class UserNotificationController extends Controller
                 ], 500);
             }
     }
+    
+    public function markAllAsRead(Request $request)
+    {
+        try {
+            $user = auth()->user();
+            $user->unreadNotifications->markAsRead();
+    
+            return response()->json([
+                'status' => true,
+                'message' => __('All notifications marked as read'),
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage(),
+            ], 500);
+        }
+    }
 }

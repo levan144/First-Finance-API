@@ -28,6 +28,7 @@ class TransferRequest extends FormRequest
             'recipient_iban' => 'required|string',
             'amount' => 'required|numeric|min:0',
             'save_beneficiary' => 'required|boolean',
+            'charges' => 'required|in:SHA,OUR'
         ];
     }
     

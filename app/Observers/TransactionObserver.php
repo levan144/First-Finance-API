@@ -25,7 +25,6 @@ class TransactionObserver
     public function updated(Transaction $transaction)
     {
         if ($transaction->isDirty('status')){
-            //Get Transaction FEE
             $fee = $transaction->fee;
             if ($transaction->status === 'Approved') {
                 $user = $transaction->user;

@@ -100,6 +100,7 @@ class TransactionController extends Controller
         $recipientType = $request->input('recipient_type');
         $recipientName = $request->input('recipient_name');
         $reference = $request->input('reference');
+        $charges = $request->input('charges');
         $amount = $request->input('amount');
 
         // New Fields
@@ -151,6 +152,7 @@ class TransactionController extends Controller
         $transaction->bank_fee = number_format($bankFee,2);
         $transaction->type = 'transfer';
         $transaction->reference = $reference;
+        $transaction->charges = $charges;
         $transaction->status = 'Pending'; // Set initial status as pending
         
         // Set new beneficiary fields

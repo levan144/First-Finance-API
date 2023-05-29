@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use App\Models\LegalRepresentative;
 class UserController extends Controller
 {
@@ -10,8 +11,23 @@ class UserController extends Controller
         
     }
     
-    public function single(){
-        
+    public function show(){
+        try {
+            $user = auth('sanctum')->user();
+            $data['name'] = $user->name;
+            $data['email'] = $user->email;
+            $data['verified_at'] = $user->verified_at;
+            $data['balance_due'] = $user->balance_due;
+            return response()->json([
+                'status' => true,
+                'user' => $data,
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage(),
+            ], 500);
+        }
     }
     
     public function store(){
@@ -23,18 +39,18 @@ class UserController extends Controller
     }
     
     public function refreshToken(Request $request){
-    $validatedData = $request->validate([
-        'refresh_token' => 'required|string',
-    ]);
-    $user = auth('sanctum')->user();
-    $newAccessToken = $user->createToken('authToken')->accessToken;
-
-    return response()->json([
-        'status' => true,
-        'user' => $user,
-        'access_token' => $newAccessToken,
-    ], 200);
-}
+        $validatedData = $request->validate([
+            'refresh_token' => 'required|string',
+        ]);
+        $user = auth('sanctum')->user();
+        $newAccessToken = $user->createToken('authToken')->accessToken;
+    
+        return response()->json([
+            'status' => true,
+            'user' => $user,
+            'access_token' => $newAccessToken,
+        ], 200);
+    }
     
     public function logout(Request $request) {
         auth('sanctum')->user()->tokens()->delete();
@@ -46,22 +62,22 @@ class UserController extends Controller
     }
     
     public function changePassword(Request $request) {
-    $validatedData = $request->validate([
-        'current_password' => 'required|string|min:8',
-        'new_password' => 'required|string|min:8',
-    ]);
-
-    $user = auth()->user();
-
-    if (!Hash::check($validatedData['current_password'], $user->password)) {
-        return response()->json(['status' => false, 'message' => __('Current password is incorrect')], 400);
+        $validatedData = $request->validate([
+            'current_password' => 'required|string|min:8',
+            'new_password' => 'required|string|min:8',
+        ]);
+    
+        $user = auth()->user();
+    
+        if (!Hash::check($validatedData['current_password'], $user->password)) {
+            return response()->json(['status' => false, 'message' => __('Current password is incorrect')], 400);
+        }
+    
+        $user->password = Hash::make($validatedData['new_password']);
+        $user->save();
+    
+        return response()->json(['message' => 'Password changed successfully'], 200);
     }
-
-    $user->password = Hash::make($validatedData['new_password']);
-    $user->save();
-
-    return response()->json(['message' => 'Password changed successfully'], 200);
-}
     
     public function destroy(Request $request){
         try{
