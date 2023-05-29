@@ -347,10 +347,11 @@ class TransactionController extends Controller
     
             // Perform fee calculation based on transaction type and amount
             $fee = $this->calculateFeeForTransaction($type, $amount, $user);
-    
+            $bankFee = $amount * self::BANK_FEE_PERCENTAGE;
             return response()->json([
                 'status' => true,
                 'fee' => $fee,
+                'bank_fee' => $bankFee,
             ]);
         } catch (\Throwable $th) {
         return response()->json([
