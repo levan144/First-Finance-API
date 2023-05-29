@@ -25,11 +25,10 @@ class TransactionObserver
     public function updated(Transaction $transaction)
     {
         if ($transaction->isDirty('status')){
-            //GET Transaction FEE
-            $fee = $transaction->fee; 
+            //Get Transaction FEE
+            $fee = $transaction->fee;
             if ($transaction->status === 'Approved') {
                 $user = $transaction->user;
-                
                 // Add the fee to the user's balance due if the transaction is approved
                 $user->balance_due += $fee;
                 if($transaction->type === 'transfer'){
@@ -40,18 +39,20 @@ class TransactionObserver
                     $bankAccount->balance -= $transaction->amount;
                     $bankAccount->save();
                 }
+                $user->save();
                 
             } elseif ($transaction->getOriginal('status') === 'Approved' && $transaction->status !== 'Approved') {
                 // Deduct the fee from the user's balance due if the transaction was previously approved and now NOT.
-                $user->balance_due -= $fee;
+                
                 if($transaction->type === 'transfer'){
                     // Perform the actions to charge balance here
-                    
                     // For example, you can retrieve the associated bank account and deduct the amount from the balance
                     $bankAccount = $transaction->bankAccount;
                     $bankAccount->balance += $transaction->amount;
                     $bankAccount->save();
                 }
+                $user->balance_due -= $fee;
+                $user->save();
             }
         
             $this->sendNotificationBasedOnStatus($transaction);
