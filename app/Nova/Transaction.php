@@ -96,7 +96,7 @@ class Transaction extends Resource
                 ->sortable(),
             
             CurrencyField::make(__('Bank Fee'),'bank_fee')
-                ->currency('USD')
+                ->currency($this->currencyCode())
                 ->sortable(),
             
             Select::make('Type')
