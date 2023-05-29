@@ -91,6 +91,7 @@ Route::middleware('auth:sanctum')->group(function () {
                 
             Route::group(['prefix' => 'transactions'], function () {
                 Route::get('/bank-accounts/{bankAccount}', [TransactionController::class, 'getBankAccountTransactions']);
+                Route::get('/bank/{id}', [TransactionController::class, 'getBankTransactions']);
                 Route::post('/transfer', [TransactionController::class, 'transfer']);
                 Route::post('/exchange', [TransactionController::class, 'exchange']);
                 Route::post('/calculate-exchange', [TransactionController::class, 'calculateExchange']);

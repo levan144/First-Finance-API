@@ -7,6 +7,7 @@ use App\Http\Requests\Api\Transactions\TransferRequest;
 use App\Http\Requests\Api\Transactions\ExchangeRequest;
 use App\Models\Transaction;
 use App\Models\BankAccount;
+use App\Models\Bank;
 use App\Models\Currency;
 use App\Models\ExchangeRate;
 use Illuminate\Http\Request;
@@ -55,6 +56,29 @@ class TransactionController extends Controller
     {
         try {
             $transactions = $bankAccount->transactions;
+
+            return response()->json([
+                'status' => true,
+                'transactions' => $transactions
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
+    
+    public function getBankTransactions($id)
+    {
+        try {
+            $bank = Bank::findOrFail($id);
+            $user = auth('sanctum')->user();
+            
+            $transactions = Transaction::whereHas('bankAccount.userBank', function ($query) use ($user, $bank) {
+                $query->where('user_id', $user->id)
+                      ->where('bank_id', $bank->id);
+            })->get();
 
             return response()->json([
                 'status' => true,
