@@ -24,7 +24,7 @@ class UserBank extends Resource
      */
      public function title() // Add this method
     {
-        return $this->user->name . ' - ' . $this->bank->name;
+        return $this->user->name ?? '' . ' - ' . $this->bank->name;
     }
 
 
