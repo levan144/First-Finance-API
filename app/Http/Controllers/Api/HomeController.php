@@ -30,7 +30,7 @@ class HomeController extends Controller
         
             // Check if all representatives are verified
             $data['all_representatives_verified'] = $user->allRepresentativesVerified();
-        
+            $data['is_verified'] = $user->verified_at ? true : false;
             return response()->json([
                 'status' => true,
                 'user' => $data,
