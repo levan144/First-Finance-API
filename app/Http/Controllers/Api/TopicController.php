@@ -4,15 +4,25 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-
+use App\Http\Requests\Api\LocaleRequest;
+use App\Models\Topic;
 class TopicController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(LocaleRequest $locale)
     {
-        //
+        $topics = Topic::all()->map(function ($topic) use ($locale) {
+                return [
+                    'id' => $topic->id,
+                    'name' => $topic->getTranslation('name', $locale),
+                ];
+            })->reject(function ($value) {
+                return empty($value['name']);
+            });
+            
+        return response()->json($topics);
     }
 
     /**
