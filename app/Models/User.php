@@ -125,6 +125,16 @@ class User extends Authenticatable implements MustVerifyEmail
         $this->save();
     }
     
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class);
+    }
+
+    public function messages()
+    {
+        return $this->hasMany(Message::class);
+    }
+    
     protected static function boot()
     {
         parent::boot();

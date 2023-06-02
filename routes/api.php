@@ -15,8 +15,16 @@ use App\Http\Controllers\Api\{
     BankAccountController,
     TransactionController,
     UserNotificationController,
-    UserController
+    UserController,
+    TicketController,
+    TopicController
+
 };
+
+use App\Http\Controllers\Api\MessageController;
+use App\Http\Controllers\Api\AttachmentController;
+
+
 use App\Http\Middleware\EnsureUserIsVerified;
 
 /*
@@ -109,10 +117,25 @@ Route::middleware('auth:sanctum')->group(function () {
                 Route::delete('/', [TransactionController::class, 'beneficiary_destroy']);
             });
         });
-            Route::get('notifications', [UserNotificationController::class, 'index']);
-            Route::get('notifications/all', [UserNotificationController::class, 'all']);
-            Route::post('notifications/read', [UserNotificationController::class, 'markAsRead']);
-            Route::post('notifications/all/read', [UserNotificationController::class, 'markAllAsRead']);
+        
+        //notifications
+        Route::get('notifications', [UserNotificationController::class, 'index']);
+        Route::get('notifications/all', [UserNotificationController::class, 'all']);
+        Route::post('notifications/read', [UserNotificationController::class, 'markAsRead']);
+        Route::post('notifications/all/read', [UserNotificationController::class, 'markAllAsRead']);
+        
+        //Support Routes
+        Route::apiResource('/tickets', TicketController::class);
+        Route::post('tickets/{id}/close', [TicketController::class, 'close']);
+        Route::apiResource('/topics', TopicController::class);
+        Route::apiResource('/messages', MessageController::class);
+        Route::apiResource('/attachments', AttachmentController::class);
+        
+        Route::post('tickets/{id}/mark-as-read', [TicketController::class, 'markAsRead']);
+        Route::post('messages/{id}/mark-as-read', [MessageController::class, 'markAsRead']);
+        Route::post('tickets/{id}/mark-all-as-read', [TicketController::class, 'markAllMessagesAsRead']);
+
+        
     });
     
     
