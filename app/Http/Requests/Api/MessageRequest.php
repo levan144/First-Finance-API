@@ -25,7 +25,13 @@ class MessageRequest extends FormRequest
     {
         return [
             'message' => 'required|string',
-            'ticket_id' => 'required|exists:tickets,id',
+            'ticket_id' => [
+                'required',
+                'exists:tickets,id',
+                Rule::exists('tickets', 'id')->where(function ($query) {
+                    $query->where('user_id', Auth::id());
+                })
+            ],
             'attachments.*' => 'nullable|file|max:12048', // Adjust the file validation rules as needed
             'locale' => ['required', Rule::in(array_keys(config('nova-translatable.locales'))),],
         ];

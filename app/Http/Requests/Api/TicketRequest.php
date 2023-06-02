@@ -24,15 +24,11 @@ class TicketRequest extends FormRequest
     public function rules(): array
     {
          return [
+            'subject' => 'required|string',
             'message' => 'required|string',
-            'ticket_id' => [
-                'required',
-                'exists:tickets,id',
-                Rule::exists('tickets', 'id')->where(function ($query) {
-                    $query->where('user_id', Auth::id());
-                })
-            ],
+            'topic_id' => 'required|exists:topics,id',
             'attachments.*' => 'nullable|file|max:2048', // Adjust the file validation rules as needed
+            'locale' => ['required', Rule::in(array_keys(config('nova-translatable.locales'))),],
         ];
     }
     
