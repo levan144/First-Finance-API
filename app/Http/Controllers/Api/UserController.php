@@ -14,6 +14,7 @@ class UserController extends Controller
     public function show(){
         try {
             $user = auth('sanctum')->user();
+            $data['id'] = $user->id;
             $data['name'] = $user->name;
             $data['email'] = $user->email;
             $data['verified_at'] = $user->verified_at;

@@ -19,7 +19,7 @@ class TicketController extends Controller
     {
         $user = Auth::user();
         $locale = $request->locale;
-        $tickets = Ticket::with('messages')
+        $tickets = Ticket::where('user_id', $user->id)->with('messages')
             ->get()
             ->map(function ($ticket) use ($user, $locale) {
                 $unreadMessages = $ticket->messages->whereNull('read_at');

@@ -11,7 +11,10 @@ use Laravel\Nova\Fields\MorphMany;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\File;
-
+use MovexUkraine\SecureArrayFiles\SecureArrayFiles;
+use Carbon\CarbonInterval;
+use Storage;
+use App\Models\Attachment;
 class Message extends Resource
 {
     /**
@@ -64,7 +67,11 @@ class Message extends Resource
                 return $request->user()->id;
             }),
             Text::make('Message'),
-            DateTime::make('Created At'),
+            DateTime::make('Created At')->step(CarbonInterval::minutes(1))->exceptOnForms(),
+            SecureArrayFiles::make('My files', 'files')
+                ->disk('public')
+                ->path('attachments'),
+            
             new Panel('Attachments', $this->attachmentFields()),
         ];
     }

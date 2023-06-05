@@ -10,7 +10,7 @@ class HomeController extends Controller
     public function home() {
         try {
             $user = auth('sanctum')->user();
-            $data = ['name' => $user->name, 'email' => $user->email, 'balance_due' => $user->balance_due];
+            $data = ['id' => $user->id, 'name' => $user->name, 'email' => $user->email, 'balance_due' => $user->balance_due];
             // Determine company verification status
             if ($user->verified_at) {
                 
