@@ -4,13 +4,20 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
-class Message extends Model
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+class Message extends Model implements HasMedia
 {
-    use HasFactory;
+    use HasFactory,InteractsWithMedia;
     
     protected $fillable = ['ticket_id', 'user_id', 'message'];
     protected $dates = ['read_at'];
+    
+    public function registerMediaCollections(): void
+{
+    $this->addMediaCollection('attachments');
+}
+    
     public function ticket()
     {
         return $this->belongsTo(Ticket::class);

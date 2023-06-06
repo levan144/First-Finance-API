@@ -11,6 +11,7 @@ use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Panel;
 use Laravel\Nova\Fields\MorphMany;
+use Stepanenko3\NovaMediaField\Fields\Media;
 
 class Ticket extends Resource
 {
@@ -69,10 +70,10 @@ class Ticket extends Resource
             Text::make('Message'),
 
             DateTime::make('Closed At'),
-
+            Media::make(__('Files'), 'attachments'), // Multiple images. Auto detect from collection
             new Panel('Messages', $this->messageFields()),
 
-            new Panel('Attachments', $this->attachmentFields()),
+            // new Panel('Attachments', $this->attachmentFields()),
         ];
     }
     
@@ -86,7 +87,7 @@ class Ticket extends Resource
     protected function attachmentFields()
     {
         return [
-            MorphMany::make('Attachments')
+            // MorphMany::make('Attachments')
         ];
     }
 

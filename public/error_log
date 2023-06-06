@@ -160,3 +160,51 @@ Stack trace:
 [02-Jun-2023 12:09:10 UTC] PHP Fatal error:  Access level to App\Http\Requests\Api\TicketRequest::validationData() must be public (as in class Illuminate\Foundation\Http\FormRequest) in /home/netridig/public_html/finance.javal.ge/app/Http/Requests/Api/TicketRequest.php on line 31
 [02-Jun-2023 12:58:18 UTC] PHP Fatal error:  Declaration of App\Http\Requests\Api\MessageRequest::validated() must be compatible with Illuminate\Foundation\Http\FormRequest::validated($key = null, $default = null) in /home/netridig/public_html/finance.javal.ge/app/Http/Requests/Api/MessageRequest.php on line 32
 [02-Jun-2023 12:58:41 UTC] PHP Fatal error:  Declaration of App\Http\Requests\Api\MessageRequest::validated() must be compatible with Illuminate\Foundation\Http\FormRequest::validated($key = null, $default = null) in /home/netridig/public_html/finance.javal.ge/app/Http/Requests/Api/MessageRequest.php on line 34
+[06-Jun-2023 21:06:23 UTC] PHP Fatal error:  Declaration of DigitalCreative\Filepond\Filepond::jsonSerialize() must be compatible with Laravel\Nova\Fields\Field::jsonSerialize(): array in /home/netridig/public_html/finance.javal.ge/vendor/digital-creative/nova-filepond/src/Filepond.php on line 418
+[06-Jun-2023 21:06:50 UTC] PHP Fatal error:  Declaration of DigitalCreative\Filepond\Filepond::jsonSerialize() must be compatible with Laravel\Nova\Fields\Field::jsonSerialize(): array in /home/netridig/public_html/finance.javal.ge/vendor/digital-creative/nova-filepond/src/Filepond.php on line 418
+[06-Jun-2023 21:07:02 UTC] PHP Fatal error:  Declaration of DigitalCreative\Filepond\Filepond::jsonSerialize() must be compatible with Laravel\Nova\Fields\Field::jsonSerialize(): array in /home/netridig/public_html/finance.javal.ge/vendor/digital-creative/nova-filepond/src/Filepond.php on line 418
+[06-Jun-2023 21:07:15 UTC] PHP Fatal error:  Declaration of DigitalCreative\Filepond\Filepond::jsonSerialize() must be compatible with Laravel\Nova\Fields\Field::jsonSerialize(): array in /home/netridig/public_html/finance.javal.ge/vendor/digital-creative/nova-filepond/src/Filepond.php on line 418
+[06-Jun-2023 21:08:29 UTC] PHP Fatal error:  Declaration of DigitalCreative\Filepond\Filepond::jsonSerialize() must be compatible with Laravel\Nova\Fields\Field::jsonSerialize(): array in /home/netridig/public_html/finance.javal.ge/vendor/digital-creative/nova-filepond/src/Filepond.php on line 418
+[06-Jun-2023 21:11:38 UTC] PHP Fatal error:  Declaration of DigitalCreative\Filepond\Filepond::jsonSerialize() must be compatible with Laravel\Nova\Fields\Field::jsonSerialize(): array in /home/netridig/public_html/finance.javal.ge/vendor/digital-creative/nova-filepond/src/Filepond.php on line 422
+[06-Jun-2023 21:51:27 UTC] PHP Fatal error:  Cannot use App\Http\Resources\Message as Message because the name is already in use in /home/netridig/public_html/finance.javal.ge/app/Http/Controllers/Api/MessageController.php on line 14
+[06-Jun-2023 22:04:48 UTC] PHP Fatal error:  Class App\Models\Ticket contains 12 abstract methods and must therefore be declared abstract or implement the remaining methods (Spatie\MediaLibrary\HasMedia::media, Spatie\MediaLibrary\HasMedia::addMedia, Spatie\MediaLibrary\HasMedia::copyMedia, ...) in /home/netridig/public_html/finance.javal.ge/app/Models/Ticket.php on line 10
+[06-Jun-2023 22:21:42 UTC] PHP Fatal error:  Uncaught ErrorException: include(/home/netridig/public_html/finance.javal.ge/vendor/composer/../../app/Models/Attachment.php): Failed to open stream: No such file or directory in /home/netridig/public_html/finance.javal.ge/vendor/composer/ClassLoader.php:571
+Stack trace:
+#0 /home/netridig/public_html/finance.javal.ge/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(250): Illuminate\Foundation\Bootstrap\HandleExceptions->handleError(2, 'include(/home/n...', '/home/netridig/...', 571)
+#1 /home/netridig/public_html/finance.javal.ge/vendor/composer/ClassLoader.php(571): Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(2, 'include(/home/n...', '/home/netridig/...', 571)
+#2 /home/netridig/public_html/finance.javal.ge/vendor/composer/ClassLoader.php(571): include('/home/netridig/...')
+#3 /home/netridig/public_html/finance.javal.ge/vendor/composer/ClassLoader.php(428): Composer\Autoload\includeFile('/home/netridig/...')
+#4 /home/netridig/public_html/finance.javal.ge/vendor/laravel/nova/src/Resource.php(408): Composer\Autoload\ClassLoader->loadClass('App\\Models\\Atta...')
+#5 /home/netridig/public_html/finance.javal.ge/vendor/laravel/nova/src/Authorizable.php(24): Laravel\Nova\Resource::newModel()
+#6 /home/netridig/public_html/finance.javal.ge/vendor/laravel/nova/src/Authorizable.php(56): Laravel\Nova\Resource::authorizable()
+#7 /home/netridig/public_html/finance.javal.ge/vendor/laravel/nova/src/ResourceCollection.php(25): Laravel\Nova\Resource::authorizedToViewAny(Object(Laravel\Nova\Http\Requests\ResourceIndexRequest))
+#8 [internal function]: Laravel\Nova\ResourceCollection->Laravel\Nova\{closure}('App\\Nova\\Attach...', 2)
+#9 /home/netridig/public_html/finance.javal.ge/vendor/laravel/framework/src/Illuminate/Collections/Arr.php(828): array_filter(Array, Object(Closure), 1)
+#10 /home/netridig/public_html/finance.javal.ge/vendor/laravel/framework/src/Illuminate/Collections/Collection.php(382): Illuminate\Support\Arr::where(Array, Object(Closure))
+#11 /home/netridig/public_html/finance.javal.ge/vendor/laravel/nova/src/ResourceCollection.php(26): Illuminate\Support\Collection->filter(Object(Closure))
+#12 /home/netridig/public_html/finance.javal.ge/vendor/laravel/nova/src/Nova.php(352): Laravel\Nova\ResourceCollection->authorized(Object(Laravel\Nova\Http\Requests\ResourceIndexRequest))
+#13 /home/netridig/public_html/finance.javal.ge/vendor/laravel/nova/src/Nova.php(1148): Laravel\Nova\Nova::authorizedResources(Object(Laravel\Nova\Http\Requests\ResourceIndexRequest))
+#14 /home/netridig/public_html/finance.javal.ge/vendor/laravel/nova/src/Nova.php(1127): Laravel\Nova\Nova::globallySearchableResources(Object(Laravel\Nova\Http\Requests\ResourceIndexRequest))
+#15 /home/netridig/public_html/finance.javal.ge/vendor/laravel/nova/src/Nova.php(1008): Laravel\Nova\Nova::hasGloballySearchableResources()
+#16 /home/netridig/public_html/finance.javal.ge/vendor/laravel/nova/src/Nova.php(941): Laravel\Nova\Nova::Laravel\Nova\{closure}(Object(Illuminate\Http\Request))
+#17 [internal function]: Laravel\Nova\Nova::Laravel\Nova\{closure}(Object(Closure), 'globalSearchEna...')
+#18 /home/netridig/public_html/finance.javal.ge/vendor/laravel/framework/src/Illuminate/Collections/Arr.php(558): array_map(Object(Closure), Array, Array)
+#19 /home/netridig/public_html/finance.javal.ge/vendor/laravel/framework/src/Illuminate/Collections/Collection.php(770): Illuminate\Support\Arr::map(Array, Object(Closure))
+#20 /home/netridig/public_html/finance.javal.ge/vendor/laravel/nova/src/Nova.php(943): Illuminate\Support\Collection->map(Object(Closure))
+#21 /home/netridig/public_html/finance.javal.ge/vendor/laravel/nova/src/Http/Middleware/HandleInertiaRequests.php(46): Laravel\Nova\Nova::jsonVariables(Object(Illuminate\Http\Request))
+#22 /home/netridig/public_html/finance.javal.ge/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): Laravel\Nova\Http\Middleware\HandleInertiaRequests->Laravel\Nova\Http\Middleware\{closure}()
+#23 /home/netridig/public_html/finance.javal.ge/vendor/laravel/framework/src/Illuminate/Container/Util.php(41): Illuminate\Container\BoundMethod::Illuminate\Container\{closure}()
+#24 /home/netridig/public_html/finance.javal.ge/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(81): Illuminate\Container\Util::unwrapIfClosure(Object(Closure))
+#25 /home/netridig/public_html/finance.javal.ge/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(37): Illuminate\Container\BoundMethod::callBoundMethod(Object(Illuminate\Foundation\Application), Object(Closure), Object(Closure))
+#26 /home/netridig/public_html/finance.javal.ge/vendor/laravel/framework/src/Illuminate/Container/Container.php(661): Illuminate\Container\BoundMethod::call(Object(Illuminate\Foundation\Application), Object(Closure), Array, NULL)
+#27 /home/netridig/public_html/finance.javal.ge/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(353): Illuminate\Container\Container->call(Object(Closure))
+#28 /home/netridig/public_html/finance.javal.ge/vendor/inertiajs/inertia-laravel/src/Response.php(120): Illuminate\Support\Facades\Facade::__callStatic('call', Array)
+#29 /home/netridig/public_html/finance.javal.ge/vendor/inertiajs/inertia-laravel/src/Response.php(97): Inertia\Response->resolvePropertyInstances(Array, Object(Illuminate\Http\Request))
+#30 /home/netridig/public_html/finance.javal.ge/vendor/laravel/nova/src/Exceptions/NovaExceptionHandler.php(70): Inertia\Response->toResponse(Object(Illuminate\Http\Request))
+#31 /home/netridig/public_html/finance.javal.ge/vendor/laravel/nova/src/Exceptions/NovaExceptionHandler.php(44): Laravel\Nova\Exceptions\NovaExceptionHandler->renderInertiaException(Object(Illuminate\Http\Request), Object(ErrorException))
+#32 /home/netridig/public_html/finance.javal.ge/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(213): Laravel\Nova\Exceptions\NovaExceptionHandler->render(Object(Illuminate\Http\Request), Object(ErrorException))
+#33 /home/netridig/public_html/finance.javal.ge/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(190): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(ErrorException))
+#34 /home/netridig/public_html/finance.javal.ge/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(250): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(ErrorException))
+#35 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(ErrorException))
+#36 {main}
+  thrown in /home/netridig/public_html/finance.javal.ge/vendor/composer/ClassLoader.php on line 571

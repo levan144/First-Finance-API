@@ -6,10 +6,11 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\Api\TicketRequest;
 use App\Http\Requests\Api\LocaleRequest;
-use App\Models\Attachment;
+// use App\Models\Attachment;
 use Storage;
 use App\Models\Ticket;
 use Auth;
+use App\Http\Resources\TicketResource;
 class TicketController extends Controller
 {
     /**
@@ -27,7 +28,7 @@ class TicketController extends Controller
                 // $ticket->unread = $unreadMessages->isNotEmpty();
                 $ticket->messages_count = $ticket->messages->count();
                 $ticket->topic_name = $ticket->topic->getTranslation('name', $locale);
-                return $ticket;
+                return new TicketResource($ticket);
             });
 
         return response()->json($tickets);
@@ -70,33 +71,21 @@ class TicketController extends Controller
         $locale = $request->locale;
         $ticketData = $request->validated();
         $ticketData['user_id'] = Auth::id();
-        
-        $attachments = [];
-       
        
         $ticket = Ticket::create($ticketData);
         // Set the attachable_id for each attachment
         if ($request->hasFile('attachments')) {
             foreach ($request->file('attachments') as $attachmentFile) {
                 
-                $attachmentPath = $attachmentFile->store('attachments', 'public');
-                
-                $attachment = Attachment::create([
-                    'file' => Storage::url($attachmentPath),
-                    'attachable_type' => Ticket::class,
-                    'attachable_id' => $ticket->id, // Will be set after creating the ticket
-                ]);
-
-                $attachments[] = $attachment;
+                $ticket
+                   ->addMedia($attachmentFile)
+                   ->toMediaCollection('attachments');
             }
         }
-        // dd($attachments);
-        // Associate the attachments with the created ticket
-        $ticket->attachments()->saveMany($attachments);
-        
-        $ticket->load(['messages','attachments']);
+     
+        $ticket->load(['messages']);
         $ticket->topic_name = $ticket->topic->getTranslation('name', $locale);
-        return response()->json($ticket, 201);
+        return new TicketResource($ticket);
     }
 
     /**
@@ -110,12 +99,7 @@ class TicketController extends Controller
             $query->orderBy('created_at', 'asc');
         }])->findOrFail($id);
 
-        $unreadMessages = $ticket->messages->whereNull('read_at');
-
-        $ticket->unread = $unreadMessages->isNotEmpty();
-        $ticket->messages_count = $ticket->messages->count();
-        $ticket->topic_name = $ticket->topic->getTranslation('name', $locale);
-        return response()->json($ticket);
+        return new TicketResource($ticket);
     }
 
     /**

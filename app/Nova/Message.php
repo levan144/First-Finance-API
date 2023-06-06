@@ -11,10 +11,10 @@ use Laravel\Nova\Fields\MorphMany;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\File;
-use MovexUkraine\SecureArrayFiles\SecureArrayFiles;
 use Carbon\CarbonInterval;
-use Storage;
-use App\Models\Attachment;
+// use App\Models\Attachment;
+use Stepanenko3\NovaMediaField\Fields\Media;
+
 class Message extends Resource
 {
     /**
@@ -68,11 +68,11 @@ class Message extends Resource
             }),
             Text::make('Message'),
             DateTime::make('Created At')->step(CarbonInterval::minutes(1))->exceptOnForms(),
-            SecureArrayFiles::make('My files', 'files')
-                ->disk('public')
-                ->path('attachments'),
-            
-            new Panel('Attachments', $this->attachmentFields()),
+           
+            Media::make(__('Files'), 'files'), // Multiple images. Auto detect from collection
+
+                    
+            // new Panel('Attachments', $this->attachmentFields()),
         ];
     }
     
@@ -81,7 +81,7 @@ class Message extends Resource
         return [
            
                 
-            MorphMany::make('Attachments')
+            // MorphMany::make('Attachments')
         ];
     }
     
