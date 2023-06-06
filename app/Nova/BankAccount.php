@@ -33,7 +33,7 @@ class BankAccount extends Resource
      */
      public function title() // Add this method
     {
-        return $this->userBank->user->name . ' - ' . $this->currency->code;
+        return $this->account_name;
     }
 
     /**

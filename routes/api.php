@@ -108,6 +108,9 @@ Route::middleware('auth:sanctum')->group(function () {
                 Route::post('/calculate-fee', [TransactionController::class, 'calculateFee']);
                 Route::get('/', [TransactionController::class, 'index']);
                 Route::get('/{id}', [TransactionController::class, 'show']);
+                
+                Route::get('/invoice/show/{transaction}', [TransactionController::class, 'showInvoice']);
+                Route::get('/invoice/download/{transaction}', [TransactionController::class, 'downloadInvoice']);
                 // Add other transaction routes as needed
                 
             });
@@ -134,12 +137,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('tickets/{id}/mark-as-read', [TicketController::class, 'markAsRead']);
         Route::post('messages/{id}/mark-as-read', [MessageController::class, 'markAsRead']);
         Route::post('tickets/{id}/mark-all-as-read', [TicketController::class, 'markAllMessagesAsRead']);
-
+        
+        
         
     });
     
     
 });
-
+Route::get('/invoice/show/{transaction}', [TransactionController::class, 'showInvoice']);
+                Route::get('/invoice/download/{transaction}', [TransactionController::class, 'downloadInvoice']);
 Route::get('sumsub/token', [SumsubController::class, 'getAccessToken']);
 Route::get('sumsub/createApplicant', [SumsubController::class, 'createApplicant']);

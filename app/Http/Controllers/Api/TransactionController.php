@@ -15,6 +15,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Fee;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Beneficiary;
+use PDF;
 
 class TransactionController extends Controller
 {
@@ -488,5 +489,40 @@ class TransactionController extends Controller
             'message' => __('Transaction created successfully.'),
             'transaction' => $transaction,
         ]);
+    }
+    
+    public function showInvoice(Transaction $transaction){
+        // You can pass data to the view as needed
+        $data = ['transaction' => $transaction];
+    
+        $pdf = PDF::loadView('invoices.invoice', $data);
+        
+        // Return the PDF response
+        return $pdf->stream('Invoice_'.$transaction->id.'.pdf');
+    }
+    
+    public function downloadInvoice(Transaction $transaction){
+        // You can pass data to the view as needed
+        $data = ['transaction' => $transaction];
+    
+        $pdf = PDF::loadView('invoices.invoice', $data);
+        
+        // Save the PDF to a temporary file
+        if (is_writable(sys_get_temp_dir())) {
+            $temp_path = tempnam(sys_get_temp_dir(), 'Invoice_');
+        } else {
+            return response()->json([
+                'status' => true,
+                'message' => __("Cannot write to temp directory"),
+            ]);
+        }
+        $pdf->save($temp_path);
+    
+        // Return the path if you want to do something with it
+        return response()->json([
+            'status' => true,
+            'invoice_url' => $temp_path,
+        ]);
+        
     }
 }

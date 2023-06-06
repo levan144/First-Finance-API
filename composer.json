@@ -7,6 +7,7 @@
     "require": {
         "php": "^8.1",
         "alexwenzel/nova-dependency-container": "^1.10",
+        "barryvdh/laravel-dompdf": "^2.0",
         "bolechen/nova-activitylog": "^0.4.0",
         "guzzlehttp/guzzle": "^7.5",
         "intervention/image": "^2.7",
