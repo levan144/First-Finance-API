@@ -14,9 +14,11 @@ use Spatie\Permission\Traits\HasRoles;
 use App\Models\Scopes\UserScope;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Models\Fee;
+use Laravel\Nova\Actions\Actionable;
+
 class User extends Authenticatable implements MustVerifyEmail
 {
-     use HasRoles, HasApiTokens, HasFactory, Notifiable, LogsActivity, SoftDeletes;
+     use HasRoles, HasApiTokens, HasFactory, Notifiable, LogsActivity, SoftDeletes, Actionable;
     // use HasApiTokens, HasFactory, Notifiable;
 
     /**

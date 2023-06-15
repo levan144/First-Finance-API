@@ -12,6 +12,7 @@ use App\Http\Requests\Api\MessageRequest;
 use Illuminate\Support\Facades\Auth;
 use Storage;
 use App\Http\Resources\MessageResource;
+use App\Models\User;
 
 class MessageController extends Controller
 {
@@ -38,6 +39,8 @@ class MessageController extends Controller
                    ->toMediaCollection('attachments', 'attachments');
             }
         }
+        $admin = User::find(1);
+        $admin->notify(new \App\Notifications\Nova\MessageReceived(__('The customer has sent a new support message'), $message->id));
         return new MessageResource($message);
 
     }

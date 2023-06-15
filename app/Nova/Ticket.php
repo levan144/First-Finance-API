@@ -8,6 +8,7 @@ use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\DateTime;
+use Laravel\Nova\Fields\Trix;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Panel;
 use Laravel\Nova\Fields\MorphMany;
@@ -61,16 +62,16 @@ class Ticket extends Resource
         return [
             ID::make(__('ID'), 'id')->sortable(),
 
-            BelongsTo::make('User'),
+            BelongsTo::make('User')->readonly(),
 
-            BelongsTo::make('Topic'),
+            BelongsTo::make('Topic')->readonly(),
 
-            Text::make('Subject'),
+            Text::make('Subject')->readonly(),
 
-            Text::make('Message'),
+            Trix::make('Message')->readonly(),
 
             DateTime::make('Closed At'),
-            Media::make(__('Files'), 'attachments'), // Multiple images. Auto detect from collection
+            Media::make(__('Files'), 'attachments')->readonly(), // Multiple images. Auto detect from collection
             new Panel('Messages', $this->messageFields()),
 
             // new Panel('Attachments', $this->attachmentFields()),

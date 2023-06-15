@@ -9,6 +9,7 @@ use App\Http\Requests\Api\LocaleRequest;
 // use App\Models\Attachment;
 use Storage;
 use App\Models\Ticket;
+use App\Models\User;
 use Auth;
 use App\Http\Resources\TicketResource;
 class TicketController extends Controller
@@ -82,9 +83,12 @@ class TicketController extends Controller
                    ->toMediaCollection('attachments');
             }
         }
-     
         $ticket->load(['messages']);
         $ticket->topic_name = $ticket->topic->getTranslation('name', $locale);
+        
+        $admin = User::find(1);
+        $admin->notify(new \App\Notifications\Nova\TicketReceived(__('The customer has opened a new support ticket'), $ticket->id));
+
         return new TicketResource($ticket);
     }
 
