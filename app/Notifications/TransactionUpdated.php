@@ -9,10 +9,10 @@ use Illuminate\Notifications\Notification;
 class TransactionUpdated extends Notification
 {
     use Queueable;
-
-    public function __construct()
+    protected $transactionId;
+    public function __construct($transactionId)
     {
-        //
+        $this->transactionId = $transactionId;   
     }
 
     public function via($notifiable)
@@ -23,6 +23,7 @@ class TransactionUpdated extends Notification
     public function toDatabase($notifiable)
     {
         return [
+            'transaction_id' => $this->transactionId,
             'message' => 'Your transaction request has been updated.',
             'time' => now(),
         ];

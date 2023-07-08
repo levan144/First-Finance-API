@@ -10,6 +10,7 @@ use App\Models\BankAccount;
 use App\Models\Bank;
 use App\Models\Currency;
 use App\Models\ExchangeRate;
+use App\Models\ExchangeOffer;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Fee;
@@ -94,113 +95,202 @@ class TransactionController extends Controller
     }
     
     public function transfer(TransferRequest $request) {
-    try {
-        $user = auth('sanctum')->user();
-        $senderAccountId = $request->input('sender_account_id');
-        $recipientIban = $request->input('recipient_iban');
-        $recipientType = $request->input('recipient_type');
-        $recipientName = $request->input('recipient_name');
-        $reference = $request->input('reference');
-        $charges = $request->input('charges');
-        $amount = $request->input('amount');
-
-        // New Fields
-        $beneficiaryCountryCode = $request->input('beneficiary_country_code');
-        $beneficiaryAddress = $request->input('beneficiary_address');
-        $bankName = $request->input('bank_name');
-        $bankCode = $request->input('bank_code');
-        $intermediaryBankName = $request->input('intermediary_bank_name');
-        $intermediaryBankCode = $request->input('intermediary_bank_code');
-
+        try {
+            $user = auth('sanctum')->user();
+            $senderAccountId = $request->input('sender_account_id');
+            $recipientIban = $request->input('recipient_iban');
+            $recipientType = $request->input('recipient_type');
+            $recipientName = $request->input('recipient_name');
+            $comment = $request->input('comment');
+            $reference = $request->input('reference');
+            $charges = $request->input('charges');
+            $amount = $request->input('amount');
+    
+            // New Fields
+            $beneficiaryCountryCode = $request->input('beneficiary_country_code');
+            $beneficiaryAddress = $request->input('beneficiary_address');
+            $bankName = $request->input('bank_name');
+            $bankCode = $request->input('bank_code');
+            $intermediaryBankName = $request->input('intermediary_bank_name');
+            $intermediaryBankCode = $request->input('intermediary_bank_code');
+    
+            // Calculate the fee
+            $fee = $this->calculateFeeForTransaction('transfer', $amount, $user);
+            
+            // Calculate the bank fee
+            $bankFee = $amount * self::BANK_FEE_PERCENTAGE;
+            
+            // Calculate the amount after deducting the fee
+            $amountAfterFee = $amount - $bankFee;
+            
+            // Get the sender's bank account
+            $senderAccount = $user->bankAccounts->find($senderAccountId);
+            // Check if the sender account belongs to the authenticated user
+            if (!$senderAccount) {
+                return response()->json([
+                    'status' => false,
+                    'message' => __('Invalid sender account.'),
+                ], 400);
+            }
+            
+            // Check if the sender has enough balance
+            if ($senderAccount->balance < $amount) {
+                return response()->json([
+                    'status' => false,
+                    'message' => __('Insufficient balance in the sender account.'),
+                ], 400);
+            }
+            
+            // Create the transaction
+            $transaction = new Transaction();
+            $transaction->sender_id = $user->id;
+            $transaction->bank_account_id = $senderAccountId;
+            $transaction->recipient_type = $recipientType;
+            $transaction->recipient_name = $recipientName; // Add recipient name if available
+            $transaction->sender_iban = $senderAccount->iban;
+            $transaction->recipient_iban = $recipientIban;
+            $transaction->currency_id = $senderAccount->currency_id;
+            $transaction->amount = $amount;
+            $transaction->fee = $fee; // Calculate fee if applicable
+            $transaction->bank_fee = number_format($bankFee,2);
+            $transaction->type = 'transfer';
+            $transaction->comment = $comment;
+            $transaction->reference = $reference;
+            $transaction->charges = $charges;
+            $transaction->status = 'Pending'; // Set initial status as pending
+            
+            // Set new beneficiary fields
+            $transaction->beneficiary_country_code = $beneficiaryCountryCode;
+            $transaction->beneficiary_address = $beneficiaryAddress;
+            $transaction->bank_name = $bankName;
+            $transaction->bank_code = $bankCode;
+            $transaction->intermediary_bank_name = $intermediaryBankName;
+            $transaction->intermediary_bank_code = $intermediaryBankCode;
+            
+            $transaction->save();
+            
+            // Update user balance_due with fee
+            $user->addFee($transaction->fee);
+            
+            // Deduct the amount from the sender's balance
+            $senderAccount->balance -= $amount;
+            $senderAccount->save();
+            
+            $saveBeneficiary = $request->input('save_beneficiary');
+            if ($saveBeneficiary) {
+                $beneficiary = new Beneficiary([
+                    'name' => $recipientName,
+                    'country' => $beneficiaryCountryCode,
+                    'address' => $beneficiaryAddress,
+                    'type' => $recipientType,
+                    'account_number' => $recipientIban,
+                    'bank_name' => $bankName,
+                    'bank_code' => $bankCode,
+                    'intermediary_bank_name' => $intermediaryBankName,
+                    'intermediary_bank_code' => $intermediaryBankCode
+                ]);
+                $user->beneficiaries()->save($beneficiary);
+            }
+            
+            return response()->json([
+                'status' => true,
+                'message' => __('Transfer transaction created successfully.'),
+                'transaction' => $transaction,
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage(),
+            ], 500);
+        }
+    }
+    
+    public function exchange_offers($id) {
+        $offers = Transaction::findOrFail($id)->offers;
+        return response()->json([
+                'status' => true,
+                'offers' => $offers,
+            ]);
+    }
+    
+    public function exchange_offer_show($id) {
+        $offer = ExchangeOffer::findOrFail($id);
+        $transaction = $offer->transaction;
         // Calculate the fee
-        $fee = $this->calculateFeeForTransaction('transfer', $amount, $user);
+        $fee = $this->calculateFeeForTransaction('exchange', $transaction->amount, $transaction->user);
+        $gel = Currency::where('code', 'GEL')->first();
+        $fee = number_format($fee * $this->getExchangeRate($transaction->currency, $gel), 2);
         
-        // Calculate the bank fee
-        $bankFee = $amount * self::BANK_FEE_PERCENTAGE;
+        $exchangeRate = $offer->rate;
         
         // Calculate the amount after deducting the fee
-        $amountAfterFee = $amount - $bankFee;
+        $amountAfterFee = $transaction->amount - $fee;
+        $data = [];
+        $data['currency'] = $transaction->currency;
+        $data['to_currency'] = $transaction->to_currency;
+        $data['amount'] = $transaction->amount;
+        $data['converted_amount'] = number_format($amountAfterFee * $exchangeRate, 2);
+        $data ['fee'] = $fee;
+        $data['rate'] = $offer->rate;
         
-        // Get the sender's bank account
-        $senderAccount = $user->bankAccounts->find($senderAccountId);
-        // Check if the sender account belongs to the authenticated user
-        if (!$senderAccount) {
-            return response()->json([
-                'status' => false,
-                'message' => __('Invalid sender account.'),
-            ], 400);
-        }
-        
-        // Check if the sender has enough balance
-        if ($senderAccount->balance < $amount) {
-            return response()->json([
-                'status' => false,
-                'message' => __('Insufficient balance in the sender account.'),
-            ], 400);
-        }
-        
-        // Create the transaction
-        $transaction = new Transaction();
-        $transaction->sender_id = $user->id;
-        $transaction->bank_account_id = $senderAccountId;
-        $transaction->recipient_type = $recipientType;
-        $transaction->recipient_name = $recipientName; // Add recipient name if available
-        $transaction->sender_iban = $senderAccount->iban;
-        $transaction->recipient_iban = $recipientIban;
-        $transaction->currency_id = $senderAccount->currency_id;
-        $transaction->amount = $amount;
-        $transaction->fee = $fee; // Calculate fee if applicable
-        $transaction->bank_fee = number_format($bankFee,2);
-        $transaction->type = 'transfer';
-        $transaction->reference = $reference;
-        $transaction->charges = $charges;
-        $transaction->status = 'Pending'; // Set initial status as pending
-        
-        // Set new beneficiary fields
-        $transaction->beneficiary_country_code = $beneficiaryCountryCode;
-        $transaction->beneficiary_address = $beneficiaryAddress;
-        $transaction->bank_name = $bankName;
-        $transaction->bank_code = $bankCode;
-        $transaction->intermediary_bank_name = $intermediaryBankName;
-        $transaction->intermediary_bank_code = $intermediaryBankCode;
-        
-        $transaction->save();
-        
-        // Update user balance_due with fee
-        $user->addFee($transaction->fee);
-        
-        // Deduct the amount from the sender's balance
-        $senderAccount->balance -= $amount;
-        $senderAccount->save();
-        
-        $saveBeneficiary = $request->input('save_beneficiary');
-        if ($saveBeneficiary) {
-            $beneficiary = new Beneficiary([
-                'name' => $recipientName,
-                'country' => $beneficiaryCountryCode,
-                'address' => $beneficiaryAddress,
-                'type' => $recipientType,
-                'account_number' => $recipientIban,
-                'bank_name' => $bankName,
-                'bank_code' => $bankCode,
-                'intermediary_bank_name' => $intermediaryBankName,
-                'intermediary_bank_code' => $intermediaryBankCode
+        return response()->json([
+                'status' => true,
+                'data' => $data,
             ]);
-            $user->beneficiaries()->save($beneficiary);
+    }
+    
+    
+    
+    public function exchange_offer_update(Request $request, $id){
+        $validatedData = $request->validate([
+            'status' => 'required|in:approved,rejected',
+        ]);
+        
+       
+        $exchangeOffer = ExchangeOffer::findOrFail($id);
+        
+        if($exchangeOffer->status !== 'pending') {
+             return response()->json([
+                'status' => true,
+                'message' => __('Offer Not Valid'),
+            ]);
+        }
+        
+        $exchangeOffer->status = $validatedData['status'];
+        $exchangeOffer->save();
+        $transaction = $exchangeOffer->transaction;
+
+        // Calculate the fee
+        $fee = $this->calculateFeeForTransaction('exchange', $transaction->amount, $transaction->user);
+        $gel = Currency::where('code', 'GEL')->first();
+        $fee = number_format($fee * $this->getExchangeRate($transaction->currency, $gel), 2);
+        
+        
+        // Calculate the amount after deducting the fee
+        $exchangeRate = $exchangeOffer->rate;
+        // Calculate the amount after deducting the fee
+        $amountAfterFee = $transaction->amount - $fee;
+            
+        // Update the corresponding transaction based on the offer status
+        if ($exchangeOffer->status === 'approved') {
+            $transaction = $exchangeOffer->transaction;
+            $transaction->converted_amount = number_format($amountAfterFee * $exchangeRate, 2);
+            $transaction->status = 'Approved';
+            $transaction->save();
+            
+            $transaction->approveExchange();
+            
+            return response()->json([
+                    'status' => true,
+                    'message' => __('Offer & Transaction Completed'),
+                ]);
         }
         
         return response()->json([
-            'status' => true,
-            'message' => __('Transfer transaction created successfully.'),
-            'transaction' => $transaction,
-        ]);
-    } catch (\Throwable $th) {
-        return response()->json([
-            'status' => false,
-            'message' => $th->getMessage(),
-        ], 500);
+                    'status' => true,
+                    'message' => __('The offer is rejected'),
+                ]);
     }
-}
 
     public function benecifiary_show(Request $request)
         {
@@ -278,7 +368,7 @@ class TransactionController extends Controller
         $senderAccountId = $request->input('sender_account_id');
         $recipientAccountId = $request->input('recipient_account_id');
         $amount = $request->input('amount');
-        
+        $comment = $request->input('comment');
         // $reference = $request->input('reference');
         
         // Get the sender's bank account
@@ -341,17 +431,18 @@ class TransactionController extends Controller
             $transaction->fee = $fee; // Calculate fee if applicable
             $transaction->bank_fee = number_format($bankFee,2);
             $transaction->type = 'exchange';
+            $transaction->comment = $comment;
             // $transaction->reference = $reference;
-            $transaction->status = 'Approved'; // Set initial status as pending
+            $transaction->status = 'Pending'; // Set initial status as pending
             $transaction->save();
         
             // Deduct the amount and fee from the sender account
-            $senderAccount->balance -= $amount;
-            $senderAccount->save();
+            // $senderAccount->balance -= $amount;
+            // $senderAccount->save();
             
             // Add the converted amount to the recipient account
-            $recipientAccount->balance += $convertedAmount;
-            $recipientAccount->save();
+            // $recipientAccount->balance += $convertedAmount;
+            // $recipientAccount->save();
         
             return response()->json([
                 'status' => true,

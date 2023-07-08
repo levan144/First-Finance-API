@@ -8,12 +8,11 @@ use Illuminate\Notifications\Notification;
 class TransactionApproved extends Notification
 {
     use Queueable;
-
-    public function __construct()
+    protected $transactionId;
+    public function __construct($transactionId)
     {
-        //
+        $this->transactionId = $transactionId;   
     }
-
     public function via($notifiable)
     {
         return ['database'];
@@ -22,6 +21,7 @@ class TransactionApproved extends Notification
     public function toDatabase($notifiable)
     {
         return [
+            'transaction_id' => $this->transactionId,
             'message' => 'Your transaction has been approved.',
             'time' => now(),
         ];

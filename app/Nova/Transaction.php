@@ -5,6 +5,7 @@ namespace App\Nova;
 use App\Nova\Filters\TransactionStatusFilter;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsTo;
+use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\Currency as CurrencyField;
 use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\ID;
@@ -112,6 +113,9 @@ class Transaction extends Resource
                 'Approved' => 'Approved',
                 'Rejected' => 'Rejected',
             ])->displayUsingLabels()->sortable(),
+            
+            HasMany::make('offers', 'offers', ExchangeOffer::class),
+            
         ];
     }
     

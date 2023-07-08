@@ -6,13 +6,15 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class TransactionSubmitted extends Notification
+class ExchangeRateChanged extends Notification
 {
     use Queueable;
     protected $transactionId;
+    
     public function __construct($transactionId)
     {
-        $this->transactionId = $transactionId;   
+        
+        $this->transactionId = $transactionId;
     }
 
     public function via($notifiable)
@@ -24,7 +26,7 @@ class TransactionSubmitted extends Notification
     {
         return [
             'transaction_id' => $this->transactionId,
-            'message' => 'Your transaction request has been submitted.',
+            'message' => 'Exchange rate has been changed for transaction.',
             'time' => now(),
         ];
     }

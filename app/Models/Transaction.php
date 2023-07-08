@@ -20,6 +20,8 @@ class Transaction extends Model
         'sender_iban',
         'recipient_iban',
         'currency_id',
+        'to_currency_id',
+        'comment',
         'reference',
         'amount',
         'converted_amount',
@@ -39,6 +41,10 @@ class Transaction extends Model
         return $this->belongsTo(User::class, 'sender_id');
     }
     
+    public function offers() {
+        return $this->hasMany(ExchangeOffer::class);
+    }
+    
     public function sender() {
         return $this->belongsTo(BankAccount::class, 'sender_id');
     }
@@ -51,6 +57,10 @@ class Transaction extends Model
         return $this->belongsTo(Currency::class);
     }
     
+    public function to_currency() {
+        return $this->belongsTo(Currency::class, 'to_currency_id');
+    }
+    
     public function userAccount()
     {
         return $this->belongsTo(BankAccount::class, 'sender_iban', 'iban');
@@ -59,6 +69,17 @@ class Transaction extends Model
     public function bankAccount()
     {
         return $this->belongsTo(BankAccount::class);
+    }
+    
+    public function approveExchange() {
+        $sender = $this->bankAccount;
+        $recipient = $this->recipient;
+        $sender->balance -= $this->amount;
+        $recipient->balance += $this->converted_amount;
+        $sender->save();
+        $recipient->save();
+        
+        
     }
     
     public function processTransfer() {

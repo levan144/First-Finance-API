@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('recipient_iban');
             $table->unsignedBigInteger('currency_id');
             $table->unsignedBigInteger('to_currency_id')->nullable();
+            $table->string('comment')->nullable();
             $table->string('reference')->nullable();
             $table->decimal('amount', 15, 2);
             $table->decimal('converted_amount', 15, 2)->nullable();

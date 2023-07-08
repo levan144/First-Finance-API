@@ -16,7 +16,7 @@ class TransactionObserver
     public function created(Transaction $transaction): void
     {
         // Notify the user that a transaction has been submitted.
-        $transaction->user->notify(new TransactionSubmitted($transaction));
+        $transaction->user->notify(new TransactionSubmitted($transaction->id));
     }
 
     /**
@@ -61,21 +61,20 @@ class TransactionObserver
     
     private function sendNotificationBasedOnStatus($transaction) {
         $changes = $transaction->getChanges();
-
         // If the status was changed...
         if(isset($changes['status'])) {
             // Determine the type of the notification...
             switch ($changes['status']) {
                 case 'Approved':
-                    $notification = new TransactionApproved();
+                    $notification = new TransactionApproved($transaction->id);
                     break;
 
                 case 'Rejected':
-                    $notification = new TransactionRejected();
+                    $notification = new TransactionRejected($transaction->id);
                     break;
 
                 default:
-                    $notification = new TransactionUpdated();
+                    $notification = new TransactionUpdated($transaction->id);
                     break;
             }
 
