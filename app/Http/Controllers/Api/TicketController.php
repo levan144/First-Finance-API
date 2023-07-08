@@ -25,7 +25,6 @@ class TicketController extends Controller
             ->get()
             ->map(function ($ticket) use ($user, $locale) {
                 $unreadMessages = $ticket->messages->whereNull('read_at');
-
                 // $ticket->unread = $unreadMessages->isNotEmpty();
                 $ticket->messages_count = $ticket->messages->count();
                 $ticket->topic_name = $ticket->topic->getTranslation('name', $locale);
@@ -80,7 +79,7 @@ class TicketController extends Controller
                 
                 $ticket
                    ->addMedia($attachmentFile)
-                   ->toMediaCollection('attachments');
+                   ->toMediaCollection('attachments', 'public');
             }
         }
         $ticket->load(['messages']);
