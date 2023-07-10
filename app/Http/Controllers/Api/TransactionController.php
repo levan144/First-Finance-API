@@ -607,7 +607,7 @@ class TransactionController extends Controller
         $pdfFileName = 'Invoice_' . uniqid() . '.pdf';
         $pdfFilePath = $publicDirectory . '/' . $pdfFileName;
         
-        $pdf->save($pdfFilePath);
+        $pdf->save($pdfFilePath); 
         
         $publicUrl = url('pdfs/' . $pdfFileName);
     
