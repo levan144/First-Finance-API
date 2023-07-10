@@ -25,9 +25,9 @@ class Bank extends Model
     }
     
     public function bankAccounts()
-    {
-        return $this->hasMany(BankAccount::class);
-    }
+{
+    return $this->hasManyThrough(BankAccount::class, UserBank::class, 'bank_id', 'user_bank_id');
+}
     
     public function deleteLogo()
     {

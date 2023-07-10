@@ -15,6 +15,7 @@ class BankResource extends JsonResource
             'code' => $this->code ?? $this->bank->code,
             'logo' => Storage::disk('public')->url($this->logo ?? $this->bank->logo) ,
             'is_active' => $this->is_active ?? $this->bank->is_active,
+            'total_balance' => $this->when(isset($this->total_balance), sprintf("%.2f", $this->total_balance)),
             'bank_accounts' => BankAccountResource::collection($this->whenLoaded('bankAccounts')),
         ];
     }

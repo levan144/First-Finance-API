@@ -4,9 +4,13 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Bank;
+use App\Models\BankAccount;
+use App\Models\Currency;
+
 use Illuminate\Http\Request;
 use App\Http\Resources\BankAccountResource;
 use App\Http\Resources\BankResource;
+use App\Models\ExchangeRate;
 class BankController extends Controller
 {
     /**
@@ -14,10 +18,12 @@ class BankController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index() {
+    public function index(Request $request) {
         try {
            $user = auth('sanctum')->user();
-
+           
+            $show_in_currency = Currency::find($request->currency_id);
+            
             $userBanks = $user->userBanks()->with('bankAccounts')->get();
             $unattachedBanks = Bank::whereDoesntHave('userBanks', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
@@ -30,7 +36,19 @@ class BankController extends Controller
             $unattachedBanks->each(function ($bank) use ($banks) {
                 $banks->push(new BankResource($bank));
             });
-    
+            if($show_in_currency){
+                $banks->each(function ($bank) use ($show_in_currency){
+                    $sum_in_currency = 0;
+                    $bank->bankAccounts->each(function ($bankAccount)  use ($show_in_currency, &$sum_in_currency){
+                        $sourceCurrency = Currency::findOrFail($bankAccount->currency_id);
+                        $targetCurrency = Currency::where('code', $show_in_currency->code)->first();
+                        $balance = $bankAccount->balance * $this->getExchangeRate($sourceCurrency, $targetCurrency);
+
+                        $sum_in_currency += $balance;
+                    });
+                    $bank->total_balance = $sum_in_currency;
+                });
+            }
             return response()->json([
                 'status' => true,
                 'banks' => $banks
@@ -78,6 +96,19 @@ class BankController extends Controller
         }
         
 
+    }
+    
+    private function getExchangeRate($sourceCurrency, $targetCurrency) {
+        if ($sourceCurrency->id === $targetCurrency->id) {
+        return 1;
+    }
+
+        // Retrieve the exchange rate from the exchange_rates table
+        $exchangeRate = ExchangeRate::where('currency_id', $sourceCurrency->id)
+            ->where('to_currency_id', $targetCurrency->id)
+            ->value('rate');
+    
+        return $exchangeRate;
     }
 
     /**
