@@ -598,26 +598,18 @@ class TransactionController extends Controller
     
         $pdf = PDF::loadView('invoices.invoice', $data);
         
-       $publicDirectory = public_path('pdfs'); // Assuming you have a 'pdfs' directory in your public folder
+        $publicDirectory = public_path('pdfs');
+
         if (!is_dir($publicDirectory)) {
-            mkdir($publicDirectory);
+            mkdir($publicDirectory, 0755, true);
         }
         
-        if (is_writable(sys_get_temp_dir())) {
-            $temp_path = tempnam(sys_get_temp_dir(), 'Invoice_') . '.pdf';
-        } else {
-            return response()->json([
-                'status' => false,
-                'message' => __("Cannot write to temp directory"),
-            ]);
-        }
+        $pdfFileName = 'Invoice_' . uniqid() . '.pdf';
+        $pdfFilePath = $publicDirectory . '/' . $pdfFileName;
         
-        $pdf->save($temp_path);
+        $pdf->save($pdfFilePath);
         
-        $publicPath = $publicDirectory . '/' . basename($temp_path);
-        rename($temp_path, $publicPath);
-        
-        $publicUrl = url('pdfs/' . basename($temp_path));
+        $publicUrl = url('pdfs/' . $pdfFileName);
     
         // Return the path if you want to do something with it
         return response()->json([
