@@ -239,8 +239,6 @@ class TransactionController extends Controller
             ]);
     }
     
-    
-    
     public function exchange_offer_update(Request $request, $id){
         $validatedData = $request->validate([
             'status' => 'required|in:approved,rejected',
@@ -292,8 +290,8 @@ class TransactionController extends Controller
                 ]);
     }
 
-    public function benecifiary_show(Request $request)
-        {
+    public function benecifiary_show(Request $request){
+        
             $user = auth('sanctum')->user();
         
             // Check if the beneficiary exists
@@ -319,8 +317,7 @@ class TransactionController extends Controller
             ]);
         }
         
-    public function benecifiary_all(Request $request)
-        {
+    public function benecifiary_all(Request $request){
             $user = auth()->user();
             $beneficiaries = $user->beneficiaries;
         
@@ -356,11 +353,6 @@ class TransactionController extends Controller
             'message' => __('Beneficiary deleted successfully.'),
         ]);
     }
-    
-
-    
-
-
     
     public function exchange(ExchangeRequest $request) {
         $user = auth('sanctum')->user();
@@ -542,9 +534,6 @@ class TransactionController extends Controller
         ]);
     }
 
-
-
-
     public function store(TransactionRequest $request)
     {
         $validatedData = $request->validated();
@@ -598,18 +587,26 @@ class TransactionController extends Controller
     
         $pdf = PDF::loadView('invoices.invoice', $data);
         
-        $publicDirectory = public_path('pdfs');
-
+       $publicDirectory = public_path('pdfs'); // Assuming you have a 'pdfs' directory in your public folder
         if (!is_dir($publicDirectory)) {
-            mkdir($publicDirectory, 0755, true);
+            mkdir($publicDirectory);
         }
         
-        $pdfFileName = 'Invoice_' . uniqid() . '.pdf';
-        $pdfFilePath = $publicDirectory . '/' . $pdfFileName;
+        if (is_writable(sys_get_temp_dir())) {
+            $temp_path = tempnam(sys_get_temp_dir(), 'Invoice_') . '.pdf';
+        } else {
+            return response()->json([
+                'status' => false,
+                'message' => __("Cannot write to temp directory"),
+            ]);
+        }
         
-        $pdf->save($pdfFilePath); 
+        $pdf->save($temp_path);
         
-        $publicUrl = url('pdfs/' . $pdfFileName);
+        $publicPath = $publicDirectory . '/' . basename($temp_path);
+        rename($temp_path, $publicPath);
+        
+        $publicUrl = url('pdfs/' . basename($temp_path));
     
         // Return the path if you want to do something with it
         return response()->json([
@@ -617,5 +614,16 @@ class TransactionController extends Controller
             'invoice_url' => $publicUrl,
         ]);
         
+    }
+    
+    public function exchangeRate(Request $request) {
+        // Retrieve the exchange rate from the exchange_rates table
+        $exchangeRate = ExchangeRate::where('currency_id', $request->from_currency_id)
+            ->where('to_currency_id', $request->to_currency_id)
+            ->value('rate');
+        return response()->json([
+                'status' => true,
+                'rate' => $exchangeRate,
+            ]);
     }
 }

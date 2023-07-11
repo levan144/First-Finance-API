@@ -99,7 +99,10 @@ Route::middleware('auth:sanctum')->group(function () {
                 // Add other bank account routes as needed
             });
                 
+            Route::get('/rate', [TransactionController::class, 'exchangeRate']);    
+                
             Route::group(['prefix' => 'transactions'], function () {
+                
                 Route::get('/bank-accounts/{bankAccount}', [TransactionController::class, 'getBankAccountTransactions']);
                 Route::get('/bank/{id}', [TransactionController::class, 'getBankTransactions']);
                 Route::post('/transfer', [TransactionController::class, 'transfer']);
@@ -107,10 +110,18 @@ Route::middleware('auth:sanctum')->group(function () {
                 Route::post('/calculate-exchange', [TransactionController::class, 'calculateExchange']);
                 Route::post('/calculate-fee', [TransactionController::class, 'calculateFee']);
                 Route::get('/', [TransactionController::class, 'index']);
+                
+                
                 Route::get('/{id}', [TransactionController::class, 'show']);
+                
+                Route::get('/{id}/offers', [TransactionController::class, 'exchange_offers']);
+                Route::get('/offers/{id}', [TransactionController::class, 'exchange_offer_show']);
+                Route::post('/offers/{id}/update', [TransactionController::class, 'exchange_offer_update']);
                 
                 Route::get('/invoice/show/{transaction}', [TransactionController::class, 'showInvoice']);
                 Route::get('/invoice/download/{transaction}', [TransactionController::class, 'downloadInvoice']);
+                
+                
                 // Add other transaction routes as needed
                 
             });
